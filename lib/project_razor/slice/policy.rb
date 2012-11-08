@@ -12,7 +12,7 @@ module ProjectRazor
     # ProjectRazor Slice Policy (NEW))
     # Used for policy management
     class Policy < ProjectRazor::Slice
-
+      URI_PREFIX = ProjectRazor::DEFAULT_TARGET + ProjectRazor::POLICY_PATH
       # Initializes ProjectRazor::Slice::Policy including #slice_commands, #slice_commands_help, & #slice_name
       # @param [Array] args
       def initialize(args)
@@ -93,8 +93,9 @@ module ProjectRazor
         @command = :get_policy_by_uuid
         # the UUID is the first element of the @command_array
         policy_uuid = @command_array.first
-        policy = get_object("get_policy_by_uuid", :policy, policy_uuid)
-        raise ProjectRazor::Error::Slice::InvalidUUID, "Cannot Find Policy with UUID: [#{policy_uuid}]" unless policy && (policy.class != Array || policy.length > 0)
+        policy = @client.get(URI_PREFIX + policy_uuid)
+        # policy = get_object("get_policy_by_uuid", :policy, policy_uuid)
+        raise ProjectRazor::Error::Slice::InvalidUUID, "Cannot Find Policy with UUID: [#{policy_uuid}]" unless policy[:http_err_code] != 400
         print_object_array [policy], "", :success_type => :generic
       end
 
