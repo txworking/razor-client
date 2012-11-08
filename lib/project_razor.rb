@@ -7,6 +7,7 @@ require "project_razor/object"
 require "project_razor/slice"
 require "project_razor/utility"
 require "project_razor/logging"
+require "project_razor/error"
 
 module ProjectRazor
 
