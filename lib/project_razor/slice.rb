@@ -189,7 +189,8 @@ class ProjectRazor::Slice < ProjectRazor::Object
     return_hash["command"] = @command
     return_hash["client_config"] = @data.config.get_client_config_hash if mk_response
     if @web_command
-      puts JSON.dump(return_hash)
+      puts error.message
+      #puts JSON.dump(return_hash)
     else
       list_help(return_hash)
     end
