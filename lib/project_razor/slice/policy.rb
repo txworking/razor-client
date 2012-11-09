@@ -115,7 +115,7 @@ module ProjectRazor
         check_option_usage(option_items, options, includes_uuid, false)
 
         # check the values that were passed in
-        policy = new_object_from_template_name(POLICY_PREFIX, options[:template])
+        #policy = new_object_from_template_name(POLICY_PREFIX, options[:template])
 
         # assign default values for (missing) optional parameters
         options[:maximum] = "0" if !options[:maximum]
@@ -124,12 +124,12 @@ module ProjectRazor
 
         # check for errors in inputs
         raise ProjectRazor::Error::Slice::InvalidPolicyTemplate, "Policy Template is not valid [#{options[:template]}]" unless policy
-        setup_data
-        model = get_object("model_by_uuid", :model, options[:model_uuid])
-        raise ProjectRazor::Error::Slice::InvalidUUID, "Invalid Model UUID [#{options[:model_uuid]}]" unless model && (model.class != Array || model.length > 0)
-        raise ProjectRazor::Error::Slice::InvalidModel, "Invalid Model Type [#{model.template}] != [#{policy.template}]" unless policy.template == model.template
-        broker = get_object("broker_by_uuid", :broker, options[:broker_uuid])
-        raise ProjectRazor::Error::Slice::InvalidUUID, "Invalid Broker UUID [#{options[:broker_uuid]}]" unless (broker && (broker.class != Array || broker.length > 0)) || options[:broker_uuid] == "none"
+        #setup_data
+        #model = get_object("model_by_uuid", :model, options[:model_uuid])
+        #raise ProjectRazor::Error::Slice::InvalidUUID, "Invalid Model UUID [#{options[:model_uuid]}]" unless model && (model.class != Array || model.length > 0)
+        #raise ProjectRazor::Error::Slice::InvalidModel, "Invalid Model Type [#{model.template}] != [#{policy.template}]" unless policy.template == model.template
+        #broker = get_object("broker_by_uuid", :broker, options[:broker_uuid])
+        #raise ProjectRazor::Error::Slice::InvalidUUID, "Invalid Broker UUID [#{options[:broker_uuid]}]" unless (broker && (broker.class != Array || broker.length > 0)) || options[:broker_uuid] == "none"
         options[:tags] = options[:tags].split(",") unless options[:tags].class.to_s == "Array"
         raise ProjectRazor::Error::Slice::MissingTags, "Must provide at least one tag [tags]" unless options[:tags].count > 0
         raise ProjectRazor::Error::Slice::InvalidMaximumCount, "Policy maximum count must be a valid integer" unless options[:maximum].to_i.to_s == options[:maximum]
