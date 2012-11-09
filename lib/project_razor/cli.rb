@@ -26,7 +26,8 @@ require 'optparse'
       #exit
       end
 
-      @web_command = @options[:webcommand]
+      #@web_command = @options[:webcommand]
+      @web_command = true
       @debug = @options[:debug]
       @verbose = @options[:verbose]
 
@@ -50,13 +51,14 @@ require 'optparse'
       return true
       else
         if @web_command
+          puts optparse
           puts JSON.dump({
             "slice"         => "ProjectRazor::Slice",
             "result"        => "InvalidSlice",
             "http_err_code" => 404
           })
         else
-          # puts optparse
+          puts optparse
           print_available_slices
           if slice
             print "\n [#{slice}] ".red
