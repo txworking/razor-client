@@ -48,7 +48,7 @@ class ProjectRazor::Object
     # @_persist_ctrl.object_hash_update(self.to_hash, @_namespace)
     # refresh_self
     # true
-  # end
+  # end
 
   # Get logger object
   def get_logger
@@ -60,7 +60,7 @@ class ProjectRazor::Object
     # data.check_init
     # data
     nil
-   end
+   end
 
   private
 

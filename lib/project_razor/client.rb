@@ -70,7 +70,7 @@ module ProjectRazor
       # return false unless cloud_info[:name]
       # return false unless cloud_info[:build]
       # return false unless cloud_info[:support]
-      # return false unless cloud_info[:version]
+      # return false unless cloud_info[:version]
       true
     rescue
       false
