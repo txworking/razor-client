@@ -8,6 +8,7 @@ module ProjectRazor
   class Client
     include ProjectRazor::Client::Request
     include ProjectRazor::Client::Response
+    include ProjectRazor::Client::Policy
 
     # Returns the HTTP connection adapter that will be used to connect.
     attr_reader :net_adapter
@@ -36,9 +37,9 @@ module ProjectRazor
     # @raise [ProjectRazor::Client::Exception::BadParams] when target_url is not a valid ProjectRazor API URL.
     # @raise [ProjectRazor::Client::Exception::AuthError] when auth_token is not a valid ProjectRazor API authorization token.
     def initialize(options = {})
-      @net_adapter = options[:adapter] || DEFAULT_ADAPTER
+      @net_adapter = options[:adapter] || ProjectRazor::DEFAULT_ADAPTER
       @proxy_url = options[:proxy_url] || nil
-      @target_url = options[:target_url] || DEFAULT_TARGET
+      @target_url = options[:target_url] || ProjectRazor::DEFAULT_TARGET
       @target_url = sanitize_url(@target_url)
       @trace_key = options[:trace_key] || nil
       @auth_token = options[:auth_token] || nil
@@ -71,6 +72,7 @@ module ProjectRazor
       # return false unless cloud_info[:build]
       # return false unless cloud_info[:support]
       # return false unless cloud_info[:version]
+
       true
     rescue
       false

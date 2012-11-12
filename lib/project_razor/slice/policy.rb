@@ -74,7 +74,7 @@ module ProjectRazor
         # filter expression was included as part of the web command
         @command_array.unshift(@prev_args.pop) if @web_command && @prev_args.peek(0) != "default" && @prev_args.peek(0) != "get"
         # Get all policy instances and print/return
-        print_object_array @client.get(ProjectRazor::DEFAULT_TARGET+ProjectRazor::POLICY_PATH)
+        print_object_array @client.get_all_policies
         #print_object_array get_object("policies", :policy), "Policies", :style => :table
       end
 
@@ -93,7 +93,7 @@ module ProjectRazor
         @command = :get_policy_by_uuid
         # the UUID is the first element of the @command_array
         policy_uuid = @command_array.first
-        policy = @client.get(URI_PREFIX + policy_uuid)
+        policy = @client.get_policy_by_uuid(policy_uuid)
         # policy = get_object("get_policy_by_uuid", :policy, policy_uuid)
         raise ProjectRazor::Error::Slice::InvalidUUID, "Cannot Find Policy with UUID: [#{policy_uuid}]" unless policy[:http_err_code] != 400
         print_object_array [policy], "", :success_type => :generic
