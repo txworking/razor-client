@@ -2,8 +2,11 @@ require 'project_razor'
 require 'json'
 require 'colored'
 require 'optparse'
+require 'project_razor/logging'
 
   class ProjectRazor::CLI
+    include ProjectRazor::Logging
+
     # We set a constant for our Slice root Namespace. We use this to pull the
     # slice names back out from objectspace
     SLICE_PREFIX = "ProjectRazor::Slice::"
@@ -47,16 +50,18 @@ require 'optparse'
       end
 
       slice = argv.shift
+      logger.debug "slice:#{slice}"
+      logger.debug "argv:#{argv}"
       if call_razor_slice(slice, argv)
       return true
       else
         if @web_command
           puts optparse
-          puts JSON.dump({
-            "slice"         => "ProjectRazor::Slice",
-            "result"        => "InvalidSlice",
-            "http_err_code" => 404
-          })
+          # puts JSON.dump({
+          #   "slice"         => "ProjectRazor::Slice",
+          #   "result"        => "InvalidSlice",
+          #   "http_err_code" => 404
+          # })
         else
           puts optparse
           print_available_slices

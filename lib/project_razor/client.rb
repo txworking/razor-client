@@ -1,7 +1,9 @@
 require 'project_razor/constants'
 require 'project_razor/client/request'
 require 'project_razor/client/response'
+require 'project_razor/client/policy'
 require 'project_razor/exception'
+require 'project_razor/logging'
 
 module ProjectRazor
   # This is a Ruby wrapper for the ProjectRazor API
@@ -9,6 +11,7 @@ module ProjectRazor
     include ProjectRazor::Client::Request
     include ProjectRazor::Client::Response
     include ProjectRazor::Client::Policy
+    include ProjectRazor::Logging
 
     # Returns the HTTP connection adapter that will be used to connect.
     attr_reader :net_adapter

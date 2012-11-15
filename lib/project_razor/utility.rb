@@ -121,6 +121,7 @@ module ProjectRazor
       |k|
         new_hash[k.sub(/^@/,"")] = in_hash[k]
       end
+      logger.debug "#{new_hash}"
       new_hash
     end
   end

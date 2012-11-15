@@ -49,6 +49,7 @@ class ProjectRazor::Slice < ProjectRazor::Object
 
 
   def eval_command
+    logger.debug "command_array:#{command_array}"
     unless @command_array.count > 0
       # No commands or arguments are left, we need to call the :default action
       if @command_hash[:default]
@@ -102,6 +103,7 @@ class ProjectRazor::Slice < ProjectRazor::Object
       eval_command
       # String calls a method
     when String
+      logger.debug "command_action:#{command_action}"
       self.send(command_action)
       # A hash is iterated
     when Hash

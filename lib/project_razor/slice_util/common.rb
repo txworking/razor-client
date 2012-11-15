@@ -100,7 +100,9 @@ module ProjectRazor
 
       def get_options_web
         begin
-          return Hash[sanitize_hash(JSON.parse(command_shift)).map { |(k, v)| [k.to_sym, v] }]
+          tmp_hash = Hash[sanitize_hash(JSON.parse(command_shift)).map { |(k, v)| [k.to_sym, v] }]
+          logger.debug "tmp_hash"
+          return tmp_hash
         rescue JSON::ParserError => e
           # TODO: Determine if logging appropriate
           puts e.message
@@ -164,12 +166,15 @@ module ProjectRazor
         uuid = @prev_args.peek(0)
         # Get our optparse object passing our options hash, option_items hash, and our banner
         optparse = get_options(options, :options_items => option_items, :banner => banner)
+        logger.debug "optparse:#{optparse}"
         # set the command help text to the string output from optparse
         @command_help_text << optparse.to_s
         # if it's a web command, get the web options that were passed
+        logger.debug "web_command:#{web_command}"
         if @web_command
           options = get_options_web
         end
+        logger.debug "options:#{options}"
         # parse our ARGV with the optparse unless options are already set from get_options_web
         optparse.parse!(@command_array) unless option_items.any? { |k| options[k] }
         # validate required options, we use the :require_one logic to check if at least one :required value is present

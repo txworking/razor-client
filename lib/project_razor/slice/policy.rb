@@ -9,6 +9,7 @@ POLICY_PREFIX = "ProjectRazor::PolicyTemplate::"
 module ProjectRazor
   class Slice
 
+
     # ProjectRazor Slice Policy (NEW))
     # Used for policy management
     class Policy < ProjectRazor::Slice
@@ -74,6 +75,7 @@ module ProjectRazor
         # filter expression was included as part of the web command
         @command_array.unshift(@prev_args.pop) if @web_command && @prev_args.peek(0) != "default" && @prev_args.peek(0) != "get"
         # Get all policy instances and print/return
+        #puts "get_all_policies"
         print_object_array @client.get_all_policies
         #print_object_array get_object("policies", :policy), "Policies", :style => :table
       end
@@ -108,6 +110,7 @@ module ProjectRazor
         # subcommand (this method will return a UUID value, if present, and the
         # options map constructed from the @commmand_array)
         tmp, options = parse_and_validate_options(option_items, "razor policy add (options...)", :require_all)
+        logger.debug "options:#{options}"
         includes_uuid = true if tmp && tmp != "add"
         # check for usage errors (the boolean value at the end of this method
         # call is used to indicate whether the choice of options from the
@@ -118,12 +121,12 @@ module ProjectRazor
         #policy = new_object_from_template_name(POLICY_PREFIX, options[:template])
 
         # assign default values for (missing) optional parameters
-        options[:maximum] = "0" if !options[:maximum]
+        options[:maximum]     = "0" if !options[:maximum]
         options[:broker_uuid] = "none" if !options[:broker_uuid]
-        options[:enabled] = "false" if !options[:enabled]
+        options[:enabled]     = "false" if !options[:enabled]
 
         # check for errors in inputs
-        raise ProjectRazor::Error::Slice::InvalidPolicyTemplate, "Policy Template is not valid [#{options[:template]}]" unless policy
+        #raise ProjectRazor::Error::Slice::InvalidPolicyTemplate, "Policy Template is not valid [#{options[:template]}]" unless policy
         #setup_data
         #model = get_object("model_by_uuid", :model, options[:model_uuid])
         #raise ProjectRazor::Error::Slice::InvalidUUID, "Invalid Model UUID [#{options[:model_uuid]}]" unless model && (model.class != Array || model.length > 0)
@@ -136,17 +139,18 @@ module ProjectRazor
         raise ProjectRazor::Error::Slice::InvalidMaximumCount, "Policy maximum count must be > 0" unless options[:maximum].to_i >= 0
 
         # Flesh out the policy
-        policy.label         = options[:label]
-        policy.model         = model
-        policy.broker        = broker
-        policy.tags          = options[:tags]
-        policy.enabled       = options[:enabled]
-        policy.is_template   = false
-        policy.maximum_count = options[:maximum]
+        # policy.label         = options[:label]
+        # policy.model         = model
+        # policy.broker        = broker
+        # policy.tags          = options[:tags]
+        # policy.enabled       = options[:enabled]
+        # policy.is_template   = false
+        # policy.maximum_count = options[:maximum]
         # Add policy
-        policy_rules         = ProjectRazor::Policies.instance
-        policy_rules.add(policy) ? print_object_array([policy], "Policy created", :success_type => :created) :
-            raise(ProjectRazor::Error::Slice::CouldNotCreate, "Could not create Policy")
+        print_object_array @client.add_policy(options)
+        #policy_rules         = ProjectRazor::Policies.instance
+        #policy_rules.add(policy) ? print_object_array([policy], "Policy created", :success_type => :created) :
+        #    raise(ProjectRazor::Error::Slice::CouldNotCreate, "Could not create Policy")
       end
 
       def update_policy
@@ -221,9 +225,6 @@ module ProjectRazor
         raise ProjectRazor::Error::Slice::CouldNotRemove, "Could not remove policy [#{policy.uuid}]" unless @data.delete_object(policy)
         slice_success("Active policy [#{policy.uuid}] removed", :success_type => :removed)
       end
-
     end
   end
 end
-
-

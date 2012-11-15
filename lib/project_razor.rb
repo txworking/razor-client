@@ -1,3 +1,11 @@
+$razor_root = File.dirname(__FILE__).sub(/\/lib$/,"")
+$logging_path = "#{$razor_root}/log/project_razor.log"
+$temp_path = "#{$razor_root}/tmp"
+
+#puts "Razor root: #{$razor_root}"
+#puts "Logging path: #{$logging_path}"
+
+
 require 'faraday'
 require 'faraday_middleware'
 require 'json/pure'
