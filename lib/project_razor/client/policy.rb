@@ -9,19 +9,26 @@ module ProjectRazor
 		 POLICY_URI_PREFIX = ProjectRazor::DEFAULT_TARGET + ProjectRazor::POLICY_PATH
 			
 			def get_all_policies
-			  get(POLICY_URI_PREFIX)
+			  	get(POLICY_URI_PREFIX)
 			end
 			
 			def get_policy_by_uuid(policy_uuid)
-			  get(POLICY_URI_PREFIX + '/' +	policy_uuid)
+			  	get(POLICY_URI_PREFIX + '/' +	policy_uuid)
 			end
 
 			def add_policy(options)
-			  #parse options to URI format	
-			  json_str  = JSON.dump(options)
-			  json_hash = ERB::Util.url_encode(json_str)
-			  logger.debug POLICY_URI_PREFIX  + "?json_hash=#{json_hash}"
-			  post(POLICY_URI_PREFIX  + "?json_hash=#{json_hash}")
+			  	#parse options to URI format	
+			 	json_str  = JSON.dump(options)
+			 	json_hash = ERB::Util.url_encode(json_str)
+			 	logger.debug POLICY_URI_PREFIX  + "?json_hash=#{json_hash}"
+			 	post(POLICY_URI_PREFIX  + "?json_hash=#{json_hash}")
+			end
+
+			def update_policy(options)
+				json_str  = JSON.dump(options)
+				json_hash = ERB::Util.url_encode(josn_str)
+				logger.debug POLICY_URI_PREFIX + "json_hash=#{josn_hash}"
+				put(POLICY_URI_PREFIX + "json_hash=#{josn_hash}")
 			end
 		end
 	end
