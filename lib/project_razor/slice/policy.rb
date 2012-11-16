@@ -167,8 +167,8 @@ module ProjectRazor
         # call is used to indicate whether the choice of options from the
         # option_items hash must be an exclusive choice)
         check_option_usage(option_items, options, includes_uuid, false)
-        policy = get_object("policy_with_uuid", :policy, policy_uuid)
-        raise ProjectRazor::Error::Slice::InvalidUUID, "Invalid Policy UUID [#{policy_uuid}]" unless policy && (policy.class != Array || policy.length > 0)
+        # policy = get_object("policy_with_uuid", :policy, policy_uuid)
+        # raise ProjectRazor::Error::Slice::InvalidUUID, "Invalid Policy UUID [#{policy_uuid}]" unless policy && (policy.class != Array || policy.length > 0)
 
         # check the values that were passed in
         if options[:tags]
@@ -194,19 +194,20 @@ module ProjectRazor
           raise ProjectRazor::Error::Slice::InvalidMaximumCount, "Policy maximum count must be > 0" unless options[:maximum].to_i >= 0
         end
         # Update object properties
-        policy.label = options[:label] if options[:label]
-        policy.model = model if model
-        policy.broker = broker if broker
-        policy.tags = options[:tags] if options[:tags]
-        policy.enabled = options[:enabled] if options[:enabled]
-        policy.maximum_count = options[:maximum] if options[:maximum]
+        # policy.label = options[:label] if options[:label]
+        # policy.model = model if model
+        # policy.broker = broker if broker
+        # policy.tags = options[:tags] if options[:tags]
+        # policy.enabled = options[:enabled] if options[:enabled]
+        # policy.maximum_count = options[:maximum] if options[:maximum]
         if new_line_number
-          policy_rules = ProjectRazor::Policies.instance
-          policy_rules.move_policy_to_idx(policy.uuid, new_line_number.to_i)
+          # policy_rules = ProjectRazor::Policies.instance
+          # policy_rules.move_policy_to_idx(policy.uuid, new_line_number.to_i)
         end
         # Update object
-        raise ProjectRazor::Error::Slice::CouldNotUpdate, "Could not update Broker Target [#{broker.uuid}]" unless policy.update_self
-        print_object_array [policy], "", :success_type => :updated
+        # raise ProjectRazor::Error::Slice::CouldNotUpdate, "Could not update Broker Target [#{broker.uuid}]" unless policy.update_self
+        print_object_array @client.update_policy(options)
+        # print_object_array [policy], "", :success_type => :updated
       end
 
       def remove_all_policies
