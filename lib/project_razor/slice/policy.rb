@@ -32,9 +32,9 @@ module ProjectRazor
                                           "remove_policy_by_uuid")
         # and add any additional commands specific to this slice
         @slice_commands[:get].delete(/^(?!^(all|\-\-help|\-h|\{\}|\{.*\}|nil)$)\S+$/)
-        @slice_commands[:get][:else] = "get_policy_by_uuid"
+        @slice_commands[:get][:else]                                 = "get_policy_by_uuid"
         @slice_commands[:get][[/^(temp|template|templates|types)$/]] = "get_policy_templates"
-        @slice_commands[:get][[/^(callback)$/]] = "get_callback"
+        @slice_commands[:get][[/^(callback)$/]]                      = "get_callback"
 
       end
 

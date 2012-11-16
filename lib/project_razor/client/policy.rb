@@ -18,8 +18,8 @@ module ProjectRazor
 
 			def add_policy(options)
 			  #parse options to URI format	
-			  json_str = JSON.dump(options)
-			  json_hash = ERB::Util.url_encode(json_str)
+				json_str  = JSON.dump(options)
+				json_hash = ERB::Util.url_encode(json_str)
 			  logger.debug POLICY_URI_PREFIX  + "?json_hash=#{json_hash}"
 			  post(POLICY_URI_PREFIX  + "?json_hash=#{json_hash}")
 			end

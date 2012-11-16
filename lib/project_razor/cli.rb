@@ -78,12 +78,12 @@ require 'project_razor/logging'
 
     def call_razor_slice(raw_name, args)
       return nil if raw_name.nil?
-
-      name = file2const(raw_name)
-      razor_module = Object.full_const_get(SLICE_PREFIX + name).new(args)
+      
+      name                     = file2const(raw_name)
+      razor_module             = Object.full_const_get(SLICE_PREFIX + name).new(args)
       razor_module.web_command = @web_command
-      razor_module.verbose = @verbose
-      razor_module.debug = @debug
+      razor_module.verbose     = @verbose
+      razor_module.debug       = @debug
       razor_module.slice_call
       return true
     rescue => e
