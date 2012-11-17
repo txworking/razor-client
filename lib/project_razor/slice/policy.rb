@@ -212,7 +212,8 @@ module ProjectRazor
 
       def remove_all_policies
         @command = :remove_all_policies
-        raise ProjectRazor::Error::Slice::CouldNotRemove, "Could not remove all Policies" unless @data.delete_all_objects(:policy)
+        # raise ProjectRazor::Error::Slice::CouldNotRemove, "Could not remove all Policies" unless @data.delete_all_objects(:policy)
+        @client.remove_all_policies
         slice_success("All policies removed", :success_type => :removed)
       end
 
@@ -220,10 +221,11 @@ module ProjectRazor
         @command = :remove_policy_by_uuid
         # the UUID was the last "previous argument"
         policy_uuid = get_uuid_from_prev_args
-        policy = get_object("policy_with_uuid", :policy, policy_uuid)
-        raise ProjectRazor::Error::Slice::InvalidUUID, "Cannot Find Policy with UUID: [#{policy_uuid}]" unless policy && (policy.class != Array || policy.length > 0)
-        setup_data
-        raise ProjectRazor::Error::Slice::CouldNotRemove, "Could not remove policy [#{policy.uuid}]" unless @data.delete_object(policy)
+        # policy = get_object("policy_with_uuid", :policy, policy_uuid)
+        # raise ProjectRazor::Error::Slice::InvalidUUID, "Cannot Find Policy with UUID: [#{policy_uuid}]" unless policy && (policy.class != Array || policy.length > 0)
+        # setup_data
+        # raise ProjectRazor::Error::Slice::CouldNotRemove, "Could not remove policy [#{policy.uuid}]" unless @data.delete_object(policy)
+        @client.remove_policy_by_uuid(policy_uuid)
         slice_success("Active policy [#{policy.uuid}] removed", :success_type => :removed)
       end
     end
