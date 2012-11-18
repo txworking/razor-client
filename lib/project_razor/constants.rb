@@ -8,6 +8,8 @@ module ProjectRazor
 		
 		DEFAULT_TARGET = "http://" + DEFAULT_IP + DEFAULT_API900
 		
+		ACTIVE_MODEL = "/active_model"
+
 		BMC_PATH = "/bmc"
 
 		BROKER_PATH = "/broker"
