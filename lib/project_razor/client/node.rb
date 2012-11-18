@@ -1,6 +1,6 @@
 module ProjectRazor
 	class Client
-		module node
+		module Node
 		end
 	end
 end

@@ -2,9 +2,25 @@ module ProjectRazor
 		DEFAULT_ADAPTER = :net_http
 		
 		# Default CloudFoundry API Target URL.
-		DEFAULT_TARGET = "http://168.1.43.39:8026/razor/api"
+		DEFAULT_API = "/razor/api"
+
+		DEFAULT_IP = "168.1.43.39:8026"
 		
-		POLICY_PATH = "/policy"
+		DEFAULT_TARGET = "http://" + DEFAULT_IP + DEFAULT_API900
 		
+		BMC_PATH = "/bmc"
+
+		BROKER_PATH = "/broker"
+
+		IMAGE_PATH = "/image"
+
 		MODEL_PATH = "/model"
-end
+
+		NODE_PATH = "/node"
+
+		POLICY_PATH = "/policy"
+
+		TAG_PATH = "/tag"
+
+
+ends

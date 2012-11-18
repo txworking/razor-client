@@ -1,4 +1,4 @@
-
+require "erb"
 require "yaml"
 require "bson"
 
