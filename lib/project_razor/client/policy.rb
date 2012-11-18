@@ -37,7 +37,7 @@ module ProjectRazor
 			def remove_policy_by_uuid(policy_uuid)
 				delete(POLICY_URI_PREFIX + '/' + policy_uuid)
 			end
-			# not supported via REST now
+			# not supported via REST by razor now
 			def get_policy_template
 				
 			end
