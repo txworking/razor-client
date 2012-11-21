@@ -6,7 +6,7 @@ require "project_razor/logging"
 
 module ProjectRazor
 	class Client
-		module	model
+		module	Model
 			MODEL_URL_PREFIX = ProjectRazor::DEFAULT_TARGET + ProjectRazor::MODEL_PATH
 
 			def get_all_models
