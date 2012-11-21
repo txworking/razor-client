@@ -15,7 +15,7 @@ gem "require_all"
 gem "base62"
 gem "daemons"
 gem "faraday"
-gem "faraday-middware"
+gem "faraday_middleware"
 
 group :test do
   gem "rspec"
