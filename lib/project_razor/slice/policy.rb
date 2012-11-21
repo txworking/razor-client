@@ -175,15 +175,15 @@ module ProjectRazor
           options[:tags] = options[:tags].split(",") if options[:tags].is_a? String
           raise ProjectRazor::Error::Slice::MissingArgument, "Policy Tags [tag(,tag)]" unless options[:tags].count > 0
         end
-        if options[:model_uuid]
-          model = get_object("model_by_uuid", :model, options[:model_uuid])
-          raise ProjectRazor::Error::Slice::InvalidUUID, "Invalid Model UUID [#{options[:model_uuid]}]" unless model && (model.class != Array || model.length > 0)
-          raise ProjectRazor::Error::Slice::InvalidModel, "Invalid Model Type [#{model.label}]" unless policy.template == model.template
-        end
-        if options[:broker_uuid]
-          broker = get_object("broker_by_uuid", :broker, options[:broker_uuid])
-          raise ProjectRazor::Error::Slice::InvalidUUID, "Invalid Broker UUID [#{options[:broker_uuid]}]" unless (broker && (broker.class != Array || broker.length > 0)) || options[:broker_uuid] == "none"
-        end
+        # if options[:model_uuid]
+        #   model = get_object("model_by_uuid", :model, options[:model_uuid])
+        #   raise ProjectRazor::Error::Slice::InvalidUUID, "Invalid Model UUID [#{options[:model_uuid]}]" unless model && (model.class != Array || model.length > 0)
+        #   raise ProjectRazor::Error::Slice::InvalidModel, "Invalid Model Type [#{model.label}]" unless policy.template == model.template
+        # end
+        # if options[:broker_uuid]
+        #   broker = get_object("broker_by_uuid", :broker, options[:broker_uuid])
+        #   raise ProjectRazor::Error::Slice::InvalidUUID, "Invalid Broker UUID [#{options[:broker_uuid]}]" unless (broker && (broker.class != Array || broker.length > 0)) || options[:broker_uuid] == "none"
+        # end
         new_line_number = (options[:new_line_number] ? options[:new_line_number].strip : nil)
         raise ProjectRazor::Error::Slice::InputError, "New index '#{options[:new_line_number]}' is not an integer" if new_line_number && !/^[+-]?\d+$/.match(new_line_number)
         if options[:enabled]
@@ -200,13 +200,13 @@ module ProjectRazor
         # policy.tags = options[:tags] if options[:tags]
         # policy.enabled = options[:enabled] if options[:enabled]
         # policy.maximum_count = options[:maximum] if options[:maximum]
-        if new_line_number
+        # if new_line_number
           # policy_rules = ProjectRazor::Policies.instance
           # policy_rules.move_policy_to_idx(policy.uuid, new_line_number.to_i)
-        end
+        # end
         # Update object
         # raise ProjectRazor::Error::Slice::CouldNotUpdate, "Could not update Broker Target [#{broker.uuid}]" unless policy.update_self
-        print_object_array @client.update_policy(options)
+        print_object_array @client.update_policy(policy_uuid,options)
         # print_object_array [policy], "", :success_type => :updated
       end
 

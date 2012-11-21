@@ -108,7 +108,7 @@
 			"settings":
 			{
 				"buffer_size": 3892,
-				"line_ending": "Windows"
+				"line_ending": "Unix"
 			}
 		},
 		{
@@ -116,7 +116,7 @@
 			"settings":
 			{
 				"buffer_size": 2650,
-				"line_ending": "Windows"
+				"line_ending": "Unix"
 			}
 		},
 		{
@@ -124,7 +124,7 @@
 			"settings":
 			{
 				"buffer_size": 199,
-				"line_ending": "Windows"
+				"line_ending": "Unix"
 			}
 		},
 		{
@@ -148,7 +148,7 @@
 			"settings":
 			{
 				"buffer_size": 23202,
-				"line_ending": "Windows"
+				"line_ending": "Unix"
 			}
 		},
 		{
@@ -156,7 +156,7 @@
 			"settings":
 			{
 				"buffer_size": 7777,
-				"line_ending": "Windows"
+				"line_ending": "Unix"
 			}
 		},
 		{
@@ -164,7 +164,7 @@
 			"settings":
 			{
 				"buffer_size": 1533,
-				"line_ending": "Windows"
+				"line_ending": "Unix"
 			}
 		},
 		{
@@ -172,7 +172,7 @@
 			"settings":
 			{
 				"buffer_size": 1334,
-				"line_ending": "Windows"
+				"line_ending": "Unix"
 			}
 		},
 		{
@@ -180,7 +180,7 @@
 			"settings":
 			{
 				"buffer_size": 22706,
-				"line_ending": "Windows"
+				"line_ending": "Unix"
 			}
 		},
 		{
@@ -188,7 +188,7 @@
 			"settings":
 			{
 				"buffer_size": 11356,
-				"line_ending": "Windows"
+				"line_ending": "Unix"
 			}
 		}
 	],

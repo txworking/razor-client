@@ -105,8 +105,8 @@ module ProjectRazor
 
     alias :new_object_from_type_name :new_object_from_template_name
 
-    def  url_encode(hash)
-        json_str  = JSON.dump(options)
+    def url_encode(hash)
+        json_str  = JSON.dump(hash)
         json_hash = ERB::Util.url_encode(json_str)
     end
 

@@ -375,13 +375,13 @@ module ProjectRazor
       # @param filter [Hash] contains key/values used for filtering
       # @param collection [Symbol] collection symbol
       def return_objects_using_filter(collection, filter_hash)
-        setup_data
+        # setup_data
         @data.fetch_objects_by_filter(filter_hash, collection)
       end
 
       # Return all objects (no filtering)
       def return_objects(collection)
-        setup_data
+        # setup_data
         @data.fetch_all_objects(collection)
       end
 
@@ -389,7 +389,7 @@ module ProjectRazor
       # @param filter [Hash] contains key/values used for filtering
       # @param collection [Symbol] collection symbol
       def return_objects_using_uuid(collection, uuid)
-        setup_data
+        # setup_data
         @data.fetch_object_by_uuid_pattern(collection, uuid)
       end
 

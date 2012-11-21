@@ -153,7 +153,7 @@ module ProjectRazor
       end
 
       def insert_image(image_obj)
-        setup_data
+        # setup_data
         image_obj = @data.persist_object(image_obj)
         image_obj.refresh_self
       end

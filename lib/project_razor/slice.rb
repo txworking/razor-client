@@ -118,6 +118,7 @@ class ProjectRazor::Slice < ProjectRazor::Object
   # Returns a json string representing a [Hash] with metadata and response
   # @param [Hash] response
   def slice_success(response, options = {})
+    logger.debug "slice execute success"
     mk_response = options[:mk_response] ? options[:mk_response] : false
     type = options[:success_type] ? options[:success_type] : :generic
 
@@ -168,6 +169,7 @@ class ProjectRazor::Slice < ProjectRazor::Object
   # Returns a json string representing a [Hash] with metadata including error code and message
   # @param [Hash] error
   def slice_error(error, options = {})
+    logger.debug "slice execute error"
     mk_response = options[:mk_response] ? options[:mk_response] : false
     #setup_data
     return_hash = {}

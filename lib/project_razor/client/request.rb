@@ -77,7 +77,7 @@ module ProjectRazor
         headers["PROXY-USER"] = @proxy_user if @proxy_user
         headers["X-VCAP-Trace"] = @trace_key if @trace_key
         headers["Accept"] = "application/json" unless options[:raw]
-        headers["Content-Type"] = "application/json" unless options[:raw]
+        # headers["Content-Type"] = "application/json" unless options[:raw]
         response = connection(options).send(method, path) do |request|
           request.headers = headers
           request.body = payload unless payload && payload.empty?

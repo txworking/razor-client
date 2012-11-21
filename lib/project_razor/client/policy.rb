@@ -8,7 +8,7 @@ module ProjectRazor
 	class Client
 		module Policy
 		 POLICY_URI_PREFIX = ProjectRazor::DEFAULT_TARGET + ProjectRazor::POLICY_PATH
-			
+			include ProjectRazor::Utility
 			def get_all_policies
 			  	get(POLICY_URI_PREFIX)
 			end
@@ -19,15 +19,15 @@ module ProjectRazor
 
 			def add_policy(options)
 			  	#parse options to URI format	
-			  	json_hash = url_encode options
+			  	json_hash = url_encode(options)
 			 	logger.debug POLICY_URI_PREFIX  + "?json_hash=#{json_hash}"
 			 	post(POLICY_URI_PREFIX  + "?json_hash=#{json_hash}")
 			end
 
-			def update_policy(options)
-			  	json_hash = url_encode options
-				logger.debug POLICY_URI_PREFIX + "json_hash=#{josn_hash}"
-				put(POLICY_URI_PREFIX + "json_hash=#{josn_hash}")
+			def update_policy(policy_uuid,options)
+			  	json_hash = url_encode(options)
+				logger.debug POLICY_URI_PREFIX + '/' + policy_uuid + "?json_hash=#{json_hash}"
+				put(POLICY_URI_PREFIX + '/' + policy_uuid + "?json_hash=#{json_hash}")
 			end
 
 			def remove_all_policies
@@ -37,9 +37,9 @@ module ProjectRazor
 			def remove_policy_by_uuid(policy_uuid)
 				delete(POLICY_URI_PREFIX + '/' + policy_uuid)
 			end
-			# not supported via REST by razor now
+
 			def get_policy_template
-				
+				get(POLICY_URI_PREFIX + '/templates')				
 			end
 		end
 	end

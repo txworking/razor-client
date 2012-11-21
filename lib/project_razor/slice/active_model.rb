@@ -54,7 +54,8 @@ module ProjectRazor
         # filter expression was included as part of the web command
         @command_array.unshift(@prev_args.pop) if @web_command && @prev_args.peek(0) != "default" && @prev_args.peek(0) != "get"
         # Get all active model instances and print/return
-        print_object_array get_object("active_models", :active), "Active Models:", :success_type => :generic, :style => :table
+        # print_object_array get_object("active_models", :active), "Active Models:", :success_type => :generic, :style => :table
+        print_object_array @client.get_all_active_models
       end
 
       def get_active_model_by_uuid
@@ -63,7 +64,8 @@ module ProjectRazor
         uuid = get_uuid_from_prev_args
         active_model = get_object("active_model_instance", :active, uuid)
         raise ProjectRazor::Error::Slice::InvalidUUID, "Cannot Find Active Model with UUID: [#{uuid}]" unless active_model && (active_model.class != Array || active_model.length > 0)
-        print_object_array [active_model], "", :success_type => :generic
+        # print_object_array [active_model], "", :success_type => :generic
+        print_object_array @client.get_active_model_by_uuid(uuid)
       end
 
       def get_active_model_logs
@@ -87,9 +89,9 @@ module ProjectRazor
         @command = :remove_active_model_by_uuid
         # the UUID is the first element of the @command_array
         uuid = get_uuid_from_prev_args
-        active_model = get_object("active_model_instance", :active, uuid)
-        raise ProjectRazor::Error::Slice::InvalidUUID, "Cannot Find Active Model with UUID: [#{uuid}]" unless active_model && (active_model.class != Array || active_model.length > 0)
-        raise ProjectRazor::Error::Slice::CouldNotRemove, "Could not remove Active Model [#{active_model.uuid}]" unless get_data.delete_object(active_model)
+        # active_model = get_object("active_model_instance", :active, uuid)
+        # raise ProjectRazor::Error::Slice::InvalidUUID, "Cannot Find Active Model with UUID: [#{uuid}]" unless active_model && (active_model.class != Array || active_model.length > 0)
+        # raise ProjectRazor::Error::Slice::CouldNotRemove, "Could not remove Active Model [#{active_model.uuid}]" unless get_data.delete_object(active_model)
         slice_success("Active model #{active_model.uuid} removed", :success_type => :removed)
       end
 
