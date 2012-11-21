@@ -11,6 +11,7 @@ module ProjectRazor
       def get(path, options = {})
         request(:get, path, options)
       end
+      
 
       # Performs an HTTP POST request to the target cloud.
       #
