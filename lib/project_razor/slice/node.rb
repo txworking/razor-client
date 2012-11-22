@@ -56,7 +56,8 @@ module ProjectRazor
         # if it's a web command and the last argument wasn't the string "default" or "get", then a
         # filter expression was included as part of the web command
         @command_array.unshift(@prev_args.pop) if @web_command && @prev_args.peek(0) != "default" && @prev_args.peek(0) != "get"
-        print_object_array get_object("nodes", :node), "Discovered Nodes", :style => :table
+        # print_object_array get_object("nodes", :node), "Discovered Nodes", :style => :table
+        print_object_array @client.get_all_nodes
       end
 
       def get_node_by_uuid
@@ -71,36 +72,41 @@ module ProjectRazor
         # options map constructed from the @commmand_array)
         node_uuid, options = parse_and_validate_options(option_items, "razor node [get] (UUID) [--field,-f FIELD]", :require_all)
         includes_uuid = true if node_uuid
-        node = get_object("node_with_uuid", :node, node_uuid)
-        raise ProjectRazor::Error::Slice::InvalidUUID, "no matching Node (with a uuid value of '#{node_uuid}') found" unless node && (node.class != Array || node.length > 0)
+        # node = get_object("node_with_uuid", :node, node_uuid)
+        # raise ProjectRazor::Error::Slice::InvalidUUID, "no matching Node (with a uuid value of '#{node_uuid}') found" unless node && (node.class != Array || node.length > 0)
         selected_option = options[:field]
         # if no options were passed in, then just print out the summary for the specified node
-        return print_object_array [node] unless selected_option
+        # return print_object_array [node] unless selected_option
+        return print_object_array @client.get_node_by_uuid(node_uuid) unless selected_option
         if /^(attrib|attributes)$/.match(selected_option)
-          get_node_attributes(node)
+          # get_node_attributes(node)
+          get_node_attributes(node_uuid)
         elsif /^(hardware|hardware_id|hardware_ids)$/.match(selected_option)
-          get_node_hardware_ids(node)
+          # get_node_hardware_ids(node)
+          get_node_hardware_ids(node_uuid)
         else
           raise ProjectRazor::Error::Slice::InputError, "unrecognized fieldname '#{selected_option}'"
         end
       end
 
-      def get_node_attributes(node)
+      def get_node_attributes(node_uuid)
         @command = :get_node_attributes
-        if @web_command
-          print_object_array [Hash[node.attributes_hash.sort]]
-        else
-          print_object_array node.print_attributes_hash, "Node Attributes:"
-        end
+        print_object_array @client.get_node_attributes(node_uuid)
+        # if @web_command
+        #   print_object_array [Hash[node.attributes_hash.sort]]
+        # else
+        #   print_object_array node.print_attributes_hash, "Node Attributes:"
+        # end
       end
 
-      def get_node_hardware_ids(node)
+      def get_node_hardware_ids(node_uuid)
         @command = :get_node_hardware_ids
-        if @web_command
-          print_object_array [{"hw_id" => node.hw_id}]
-        else
-          print_object_array node.print_hardware_ids, "Node Hardware ID's:"
-        end
+        print_object_array @client.get_node_hardware_ids(node_uuid)
+        # if @web_command
+        #   print_object_array [{"hw_id" => node.hw_id}]
+        # else
+        #   print_object_array node.print_hardware_ids, "Node Hardware ID's:"
+        # end
       end
     end
   end
