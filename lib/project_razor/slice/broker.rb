@@ -64,8 +64,7 @@ module ProjectRazor
         # if it's a web command and the last argument wasn't the string "default" or "get", then a
         # filter expression was included as part of the web command
         @command_array.unshift(@prev_args.pop) if @web_command && @prev_args.peek(0) != "default" && @prev_args.peek(0) != "get"
-        # print_object_array get_object("broker_instances", :broker), "Broker Targets:"
-        print_object_array @client.get_all_brokers
+        print_object_array get_object("broker_instances", :broker), "Broker Targets:"
       end
 
       # Returns the broker plugins available
@@ -76,18 +75,16 @@ module ProjectRazor
           raise ProjectRazor::Error::Slice::NotFound, not_found_error
         end
         # We use the common method in Utility to fetch object plugins by providing Namespace prefix
-        # print_object_array get_child_templates(ProjectRazor::BrokerPlugin), "\nAvailable Broker Plugins:"
-        print_object_array @client.get_broker_plugins
+        print_object_array get_child_templates(ProjectRazor::BrokerPlugin), "\nAvailable Broker Plugins:"
       end
 
       def get_broker_by_uuid
         @command = :get_broker_by_uuid
         # the UUID is the first element of the @command_array
         broker_uuid = @command_array.first
-        # broker = get_object("broker instances", :broker, broker_uuid)
-        # raise ProjectRazor::Error::Slice::NotFound, "Broker Target UUID: [#{broker_uuid}]" unless broker && (broker.class != Array || broker.length > 0)
-        # print_object_array [broker]
-        print_object_array @client.get_broker_by_uuid(broker_uuid)
+        broker = get_object("broker instances", :broker, broker_uuid)
+        raise ProjectRazor::Error::Slice::NotFound, "Broker Target UUID: [#{broker_uuid}]" unless broker && (broker.class != Array || broker.length > 0)
+        print_object_array [broker]
       end
 
       def add_broker
@@ -104,28 +101,27 @@ module ProjectRazor
         # call is used to indicate whether the choice of options from the
         # option_items hash must be an exclusive choice)
         check_option_usage(option_items, options, includes_uuid, false)
-        # plugin = options[:plugin]
-        # name = options[:name]
-        # description = options[:description]
+        plugin = options[:plugin]
+        name = options[:name]
+        description = options[:description]
         servers = options[:servers]
-        # broker_version = options[:version]
+        broker_version = options[:version]
         # check the values that were passed in
         servers = servers.flatten if servers.is_a? Array
         servers = servers.split(",") if servers.is_a? String
         raise ProjectRazor::Error::Slice::MissingArgument, "Broker Server [server_hostname(,server_hostname)]" unless servers.count > 0
-        # raise ProjectRazor::Error::Slice::InvalidPlugin, "Invalid broker plugin [#{plugin}]" unless is_valid_template?(BROKER_PREFIX, plugin)
+        raise ProjectRazor::Error::Slice::InvalidPlugin, "Invalid broker plugin [#{plugin}]" unless is_valid_template?(BROKER_PREFIX, plugin)
         # use the arguments passed in (above) to create a new broker
-        # broker                  = new_object_from_template_name(BROKER_PREFIX, plugin)
-        # broker.name             = name
-        # broker.user_description = description
-        # broker.servers          = servers
-        # broker.broker_version   = broker_version
-        # broker.is_template      = false
+        broker                  = new_object_from_template_name(BROKER_PREFIX, plugin)
+        broker.name             = name
+        broker.user_description = description
+        broker.servers          = servers
+        broker.broker_version   = broker_version
+        broker.is_template      = false
         # persist that broker, and print the result (or raise an error if cannot persist it)
         # setup_data
-        # get_data.persist_object(broker)
-        # broker ? print_object_array([broker], "", :success_type => :created) : raise(ProjectRazor::Error::Slice::CouldNotCreate, "Could not create Broker Target")
-        print_object_array @client.add_broker(options)
+        get_data.persist_object(broker)
+        broker ? print_object_array([broker], "", :success_type => :created) : raise(ProjectRazor::Error::Slice::CouldNotCreate, "Could not create Broker Target")
       end
 
       def update_broker
@@ -142,26 +138,25 @@ module ProjectRazor
         # call is used to indicate whether the choice of options from the
         # option_items hash must be an exclusive choice)
         check_option_usage(option_items, options, includes_uuid, false)
-        # plugin = options[:plugin]
-        # name = options[:name]
-        # description = options[:description]
+        plugin = options[:plugin]
+        name = options[:name]
+        description = options[:description]
         servers = options[:servers]
-        # broker_version = options[:version]
+        broker_version = options[:version]
         # check the values that were passed in
         if servers
           servers = servers.split(",") if servers.is_a? String
           raise ProjectRazor::Error::Slice::MissingArgument, "Broker Server [server_hostname(,server_hostname)]" unless servers.count > 0
         end
-        # broker = get_object("broker_with_uuid", :broker, broker_uuid)
-        # raise ProjectRazor::Error::Slice::InvalidUUID, "Cannot Find Broker Target with UUID: [#{broker_uuid}]" unless broker && (broker.class != Array || broker.length > 0)
-        # broker.name             = name if name
-        # broker.user_description = description if description
-        # broker.servers          = servers if servers
-        # broker.broker_version   = broker_version if broker_version
-        # broker.is_template      = false
-        # raise ProjectRazor::Error::Slice::CouldNotUpdate, "Could not update Broker Target [#{broker.uuid}]" unless broker.update_self
-        # print_object_array [broker], "", :success_type => :updated
-        print_object_array @client.update_broker(broker_uuid, options), "", :success_type => :updated
+        broker = get_object("broker_with_uuid", :broker, broker_uuid)
+        raise ProjectRazor::Error::Slice::InvalidUUID, "Cannot Find Broker Target with UUID: [#{broker_uuid}]" unless broker && (broker.class != Array || broker.length > 0)
+        broker.name             = name if name
+        broker.user_description = description if description
+        broker.servers          = servers if servers
+        broker.broker_version   = broker_version if broker_version
+        broker.is_template      = false
+        raise ProjectRazor::Error::Slice::CouldNotUpdate, "Could not update Broker Target [#{broker.uuid}]" unless broker.update_self
+        print_object_array [broker], "", :success_type => :updated
       end
 
       def remove_broker
@@ -199,21 +194,19 @@ module ProjectRazor
       def remove_all_brokers
         @command = :remove_all_brokers
         raise ProjectRazor::Error::Slice::MethodNotAllowed, "Cannot remove all Brokers via REST" if @web_command
-        # raise ProjectRazor::Error::Slice::CouldNotRemove, "Could not remove all Brokers" unless get_data.delete_all_objects(:broker)
-        # slice_success("All brokers removed", :success_type => :removed)
-        print_object_array @client.remove_all_brokers
+        raise ProjectRazor::Error::Slice::CouldNotRemove, "Could not remove all Brokers" unless get_data.delete_all_objects(:broker)
+        slice_success("All brokers removed", :success_type => :removed)
       end
 
       def remove_broker_by_uuid
         @command = :remove_broker_by_uuid
         # the UUID is the first element of the @command_array
         broker_uuid = get_uuid_from_prev_args
-        # broker = get_object("broker_with_uuid", :broker, broker_uuid)
-        # raise ProjectRazor::Error::Slice::InvalidUUID, "Cannot Find Broker with UUID: [#{broker_uuid}]" unless broker && (broker.class != Array || broker.length > 0)
+        broker = get_object("broker_with_uuid", :broker, broker_uuid)
+        raise ProjectRazor::Error::Slice::InvalidUUID, "Cannot Find Broker with UUID: [#{broker_uuid}]" unless broker && (broker.class != Array || broker.length > 0)
         # setup_data
-        # raise ProjectRazor::Error::Slice::CouldNotRemove, "Could not remove policy [#{broker.uuid}]" unless @data.delete_object(broker)
-        print_object_array @client.remove_broker_by_uuid(broker_uuid)
-        # slice_success("Broker [#{broker.uuid}] removed", :success_type => :removed)
+        raise ProjectRazor::Error::Slice::CouldNotRemove, "Could not remove policy [#{broker.uuid}]" unless @data.delete_object(broker)
+        slice_success("Broker [#{broker.uuid}] removed", :success_type => :removed)
       end
 
     end

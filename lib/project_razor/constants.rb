@@ -26,6 +26,4 @@ module ProjectRazor
 		TEMPLATES       = "templates"
 		
 		ALL             = "all"
-
-		PLUGINS         = "plugins"
 end
