@@ -155,8 +155,8 @@ module ProjectRazor
         # call is used to indicate whether the choice of options from the
         # option_items hash must be an exclusive choice)
         check_option_usage(option_items, options, includes_uuid, false)
-        label = options[:label]
-        image_uuid = options[:image_uuid]
+        # label = options[:label]
+        # image_uuid = options[:image_uuid]
         change_metadata = options[:change_metadata]
         req_metadata_hash = options[:req_metadata_hash] if @web_command
 
@@ -164,26 +164,27 @@ module ProjectRazor
         # the --change-metadata flag was included in the update command and the
         # command was invoked via the CLI...it's an error to use this flag via
         # the RESTful API, the req_metadata_hash should be used instead)
-        model = get_object("model_with_uuid", :model, model_uuid)
-        raise ProjectRazor::Error::Slice::InvalidUUID, "Invalid Model UUID [#{model_uuid}]" unless model && (model.class != Array || model.length > 0)
+        # model = get_object("model_with_uuid", :model, model_uuid)
+        # raise ProjectRazor::Error::Slice::InvalidUUID, "Invalid Model UUID [#{model_uuid}]" unless model && (model.class != Array || model.length > 0)
         if @web_command
           if change_metadata
             raise ProjectRazor::Error::Slice::InputError, "Cannot use the change_metadata flag with a web command"
           elsif req_metadata_hash
-            model.web_create_metadata(req_metadata_hash)
+            # model.web_create_metadata(req_metadata_hash)
           end
-        else
-          if change_metadata
-            raise ProjectRazor::Error::Slice::UserCancelled, "User cancelled Model creation" unless
-                model.cli_create_metadata
-          end
+        # else
+        #   if change_metadata
+        #     raise ProjectRazor::Error::Slice::UserCancelled, "User cancelled Model creation" unless
+        #          model.cli_create_metadata
+        #   end
         end
-        model.label = label if label
-        image = model.image_prefix ? verify_image(model, image_uuid) : true if image_uuid
-        raise ProjectRazor::Error::Slice::InvalidUUID, "Invalid Image UUID [#{image_uuid}] " unless image || !image_uuid
-        model.image_uuid = image.uuid if image
-        raise ProjectRazor::Error::Slice::CouldNotUpdate, "Could not update Model [#{model.uuid}]" unless model.update_self
-        print_object_array [model] ,"",:success_type => :updated
+        # model.label = label if label
+        # image = model.image_prefix ? verify_image(model, image_uuid) : true if image_uuid
+        # raise ProjectRazor::Error::Slice::InvalidUUID, "Invalid Image UUID [#{image_uuid}] " unless image || !image_uuid
+        # model.image_uuid = image.uuid if image
+        # raise ProjectRazor::Error::Slice::CouldNotUpdate, "Could not update Model [#{model.uuid}]" unless model.update_self
+        # print_object_array [model] ,"",:success_type => :updated
+        print_object_array @client.update_model(model_uuid, options)
       end
 
       def remove_all_models
