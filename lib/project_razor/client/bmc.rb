@@ -1,5 +1,5 @@
 require "project_razor/constants"
-require "project_razor/client/requset"
+require "project_razor/client/request"
 require "project_razor/utility"
 require "project_razor/logging"
 

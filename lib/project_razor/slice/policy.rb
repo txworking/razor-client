@@ -76,7 +76,7 @@ module ProjectRazor
         @command_array.unshift(@prev_args.pop) if @web_command && @prev_args.peek(0) != "default" && @prev_args.peek(0) != "get"
         # Get all policy instances and print/return
         #puts "get_all_policies"
-        print_object_array @client.get_all_policies
+        print_object_array @client.get_all_policies, "Policies"
         #print_object_array get_object("policies", :policy), "Policies", :style => :table
       end
 
@@ -88,7 +88,8 @@ module ProjectRazor
           raise ProjectRazor::Error::Slice::NotFound, not_found_error
         end
         # We use the common method in Utility to fetch object templates by providing Namespace prefix
-        print_object_array get_child_templates(ProjectRazor::PolicyTemplate), "\nPolicy Templates:"
+        # print_object_array get_child_templates(ProjectRazor::PolicyTemplate), "\nPolicy Templates:"
+        print_object_array @client.get_policy_templates
       end
 
       def get_policy_by_uuid
@@ -98,7 +99,7 @@ module ProjectRazor
         policy = @client.get_policy_by_uuid(policy_uuid)
         # policy = get_object("get_policy_by_uuid", :policy, policy_uuid)
         raise ProjectRazor::Error::Slice::InvalidUUID, "Cannot Find Policy with UUID: [#{policy_uuid}]" unless policy[:http_err_code] != 400
-        print_object_array [policy], "", :success_type => :generic
+        print_object_array policy
       end
 
       def add_policy
@@ -213,8 +214,8 @@ module ProjectRazor
       def remove_all_policies
         @command = :remove_all_policies
         # raise ProjectRazor::Error::Slice::CouldNotRemove, "Could not remove all Policies" unless @data.delete_all_objects(:policy)
-        @client.remove_all_policies
-        slice_success("All policies removed", :success_type => :removed)
+        raise ProjectRazor::Error::Slice::MethodNotAllowed, "Cannot remove all Policies via REST" if @web_command
+        # slice_success("All policies removed", :success_type => :removed)
       end
 
       def remove_policy_by_uuid
@@ -225,8 +226,8 @@ module ProjectRazor
         # raise ProjectRazor::Error::Slice::InvalidUUID, "Cannot Find Policy with UUID: [#{policy_uuid}]" unless policy && (policy.class != Array || policy.length > 0)
         # setup_data
         # raise ProjectRazor::Error::Slice::CouldNotRemove, "Could not remove policy [#{policy.uuid}]" unless @data.delete_object(policy)
-        @client.remove_policy_by_uuid(policy_uuid)
-        slice_success("Active policy [#{policy.uuid}] removed", :success_type => :removed)
+        print_object_array @client.remove_policy_by_uuid(policy_uuid)
+        # slice_success("Active policy [#{policy.uuid}] removed", :success_type => :removed)
       end
     end
   end

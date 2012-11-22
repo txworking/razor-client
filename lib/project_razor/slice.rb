@@ -135,6 +135,8 @@ class ProjectRazor::Slice < ProjectRazor::Object
     #setup_data
     return_hash["client_config"] = @data.config.get_client_config_hash if mk_response
     if @web_command
+      print "Command:#{return_hash["command"]}\n"
+      print "Response:\n"
       puts JSON.dump(return_hash)
     else
       print "\n\n#{@slice_name.capitalize}"

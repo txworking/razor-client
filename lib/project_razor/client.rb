@@ -2,6 +2,13 @@ require 'project_razor/constants'
 require 'project_razor/client/request'
 require 'project_razor/client/response'
 require 'project_razor/client/policy'
+require 'project_razor/client/model'
+require 'project_razor/client/active_model'
+require 'project_razor/client/bmc'
+require 'project_razor/client/broker'
+require 'project_razor/client/image'
+require 'project_razor/client/node'
+require 'project_razor/client/tag'
 require 'project_razor/exception'
 require 'project_razor/logging'
 
@@ -11,6 +18,14 @@ module ProjectRazor
     include ProjectRazor::Client::Request
     include ProjectRazor::Client::Response
     include ProjectRazor::Client::Policy
+    include ProjectRazor::Client::Model
+    include ProjectRazor::Client::Bmc
+    include ProjectRazor::Client::Active_model
+    include ProjectRazor::Client::Broker
+    include ProjectRazor::Client::Image
+    include ProjectRazor::Client::Node
+    include ProjectRazor::Client::Tag
+
     include ProjectRazor::Logging
 
     # Returns the HTTP connection adapter that will be used to connect.

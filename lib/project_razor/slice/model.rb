@@ -1,5 +1,6 @@
 require 'json'
-
+require "project_razor/client"
+require "project_razor/constants"
 # Root ProjectRazor namespace
 module ProjectRazor
   class Slice
@@ -60,16 +61,18 @@ module ProjectRazor
         # filter expression was included as part of the web command
         @command_array.unshift(@prev_args.pop) if @web_command && @prev_args.peek(0) != "default" && @prev_args.peek(0) != "get"
         # Get all tag rules and print/return
-        print_object_array get_object("models", :model), "Models", :style => :table, :success_type => :generic
+        # print_object_array get_object("models", :model), "Models", :style => :table, :success_type => :generic
+        print_object_array @client.get_all_models
       end
 
       def get_model_by_uuid
         @command = :get_model_by_uuid
         # the UUID is the first element of the @command_array
         model_uuid = @command_array.first
-        model = get_object("get_model_by_uuid", :model, model_uuid)
-        raise ProjectRazor::Error::Slice::InvalidUUID, "Cannot Find Model with UUID: [#{model_uuid}]" unless model && (model.class != Array || model.length > 0)
-        print_object_array [model] ,"",:success_type => :generic
+        # model = get_object("get_model_by_uuid", :model, model_uuid)
+        # raise ProjectRazor::Error::Slice::InvalidUUID, "Cannot Find Model with UUID: [#{model_uuid}]" unless model && (model.class != Array || model.length > 0)
+        # print_object_array [model] ,"",:success_type => :generic
+        print_object_array @client.get_model_by_uuid(model_uuid)
       end
 
       def get_all_templates
@@ -79,7 +82,8 @@ module ProjectRazor
           raise ProjectRazor::Error::Slice::NotFound, not_found_error
         end
         # We use the common method in Utility to fetch object templates by providing Namespace prefix
-        print_object_array get_child_templates(ProjectRazor::ModelTemplate), "Model Templates:"
+        # print_object_array get_child_templates(ProjectRazor::ModelTemplate), "Model Templates:"
+        print_object_array @client.get_model_templates
       end
 
       def add_model
@@ -96,29 +100,29 @@ module ProjectRazor
         # call is used to indicate whether the choice of options from the
         # option_items hash must be an exclusive choice)
         check_option_usage(option_items, options, includes_uuid, false)
-        template = options[:template]
-        label = options[:label]
-        image_uuid = options[:image_uuid]
+        # template = options[:template]
+        # label = options[:label]
+        # image_uuid = options[:image_uuid]
         req_metadata_hash = options[:req_metadata_hash] if @web_command
         # check the values that were passed in
-        model = verify_template(template)
-        raise ProjectRazor::Error::Slice::InvalidModelTemplate, "Invalid Model Template [#{template}] " unless model
-        image = model.image_prefix ? verify_image(model, image_uuid) : true
-        raise ProjectRazor::Error::Slice::InvalidUUID, "Invalid Image UUID [#{image_uuid}] " unless image
+        # model = verify_template(template)
+        # raise ProjectRazor::Error::Slice::InvalidModelTemplate, "Invalid Model Template [#{template}] " unless model
+        # image = model.image_prefix ? verify_image(model, image_uuid) : true
+        # raise ProjectRazor::Error::Slice::InvalidUUID, "Invalid Image UUID [#{image_uuid}] " unless image
         # use the arguments passed in (above) to create a new model
         if @web_command
-          raise ProjectRazor::Error::Slice::MissingArgument, "Must Provide Required Metadata [req_metadata_hash]" unless
-              req_metadata_hash
-          model.web_create_metadata(req_metadata_hash)
-        else
-          raise ProjectRazor::Error::Slice::UserCancelled, "User cancelled Model creation" unless model.cli_create_metadata
+          raise ProjectRazor::Error::Slice::MissingArgument, "Must Provide Required Metadata [req_metadata_hash]" unless req_metadata_hash
+          # model.web_create_metadata(req_metadata_hash)
+        # else
+          # raise ProjectRazor::Error::Slice::UserCancelled, "User cancelled Model creation" unless model.cli_create_metadata
         end
-        model.label = label
-        model.image_uuid = image.uuid
-        model.is_template = false
+        # model.label = label
+        # model.image_uuid = image.uuid
+        # model.is_template = false
         # setup_data
-        @data.persist_object(model)
-        model ? print_object_array([model], "Model created", :success_type => :created) : raise(ProjectRazor::Error::Slice::CouldNotCreate, "Could not create Model")
+        # @data.persist_object(model)
+        # model ? print_object_array([model], "Model created", :success_type => :created) : raise(ProjectRazor::Error::Slice::CouldNotCreate, "Could not create Model")
+        print_object_array @client.add_model(options)
       end
 
       def update_model
@@ -185,34 +189,36 @@ module ProjectRazor
       def remove_all_models
         @command = :remove_all_models
         raise ProjectRazor::Error::Slice::MethodNotAllowed, "Cannot remove all Models via REST" if @web_command
-        raise ProjectRazor::Error::Slice::CouldNotRemove, "Could not remove all Tag Rules" unless @data.delete_all_objects(:model)
-        slice_success("All Models removed",:success_type => :removed)
+        # raise ProjectRazor::Error::Slice::CouldNotRemove, "Could not remove all Tag Rules" unless @data.delete_all_objects(:model)
+        # slice_success("All Models removed",:success_type => :removed)
+        print_object_array @client.remove_all_models
       end
 
       def remove_model_by_uuid
         @command = :remove_model_by_uuid
         # the UUID was the last "previous argument"
         model_uuid = get_uuid_from_prev_args
-        model = get_object("model_with_uuid", :model, model_uuid)
-        raise ProjectRazor::Error::Slice::InvalidUUID, "Cannot Find Model with UUID: [#{model_uuid}]" unless model && (model.class != Array || model.length > 0)
+        # model = get_object("model_with_uuid", :model, model_uuid)
+        # raise ProjectRazor::Error::Slice::InvalidUUID, "Cannot Find Model with UUID: [#{model_uuid}]" unless model && (model.class != Array || model.length > 0)
         # setup_data
-        raise ProjectRazor::Error::Slice::CouldNotRemove, "Could not remove Model [#{model.uuid}]" unless @data.delete_object(model)
-        slice_success("Active Model [#{model.uuid}] removed",:success_type => :removed)
+        # raise ProjectRazor::Error::Slice::CouldNotRemove, "Could not remove Model [#{model.uuid}]" unless @data.delete_object(model)
+        # slice_success("Active Model [#{model.uuid}] removed",:success_type => :removed)
+        print_object_array @client.remove_model_by_uuid(model_uuid)
       end
 
-      def verify_template(template_name)
-        get_child_templates(ProjectRazor::ModelTemplate).each { |template| return template if template.name == template_name }
-        nil
-      end
+      # def verify_template(template_name)
+      #   get_child_templates(ProjectRazor::ModelTemplate).each { |template| return template if template.name == template_name }
+      #   nil
+      # end
 
-      def verify_image(model, image_uuid)
-        # setup_data
-        image = get_object("find_image", :images, image_uuid)
-        if image && (image.class != Array || image.length > 0)
-          return image if model.image_prefix == image.path_prefix
-        end
-        nil
-      end
+      # def verify_image(model, image_uuid)
+      #   # setup_data
+      #   image = get_object("find_image", :images, image_uuid)
+      #   if image && (image.class != Array || image.length > 0)
+      #     return image if model.image_prefix == image.path_prefix
+      #   end
+      #   nil
+      # end
 
     end
   end
