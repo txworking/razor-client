@@ -64,6 +64,7 @@ module ProjectRazor
         @command = :get_node_by_uuid
         includes_uuid = false
         # ran one argument far when parsing if we were working with a web command
+        logger.debug @prev_args.to_s
         @command_array.unshift(@prev_args.pop) if @web_command
         # load the appropriate option items for the subcommand we are handling
         option_items = load_option_items(:command => :get)
