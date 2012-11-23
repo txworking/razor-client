@@ -13,7 +13,7 @@ module ProjectRazor
 			end
 
 			def get_active_model_by_uuid(active_model_uuid)
-				get(ACTIVE_MODEL_URL_PREFIX + '/' + active_model_uuid)
+				get("#{ACTIVE_MODEL_URL_PREFIX}/#{active_model_uuid}")
 			end
 
 			def get_active_model_logs
@@ -25,7 +25,7 @@ module ProjectRazor
 			end
 
 			def remove_active_model_by_uuid(active_model_uuid)
-				delete(ACTIVE_MODEL_URL_PREFIX + '/' + active_model_uuid)
+				delete("#{ACTIVE_MODEL_URL_PREFIX}/#{active_model_uuid}")
 			end
 
 			def get_logview
