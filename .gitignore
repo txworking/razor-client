@@ -19,3 +19,4 @@ doc/
 
 *.sublime-*
 .project
+project_razor.log
