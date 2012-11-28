@@ -100,6 +100,7 @@ module ProjectRazor
 
       def get_options_web
         begin
+          logger.debug @command_array
           tmp_hash = Hash[sanitize_hash(JSON.parse(command_shift)).map { |(k, v)| [k.to_sym, v] }]
           logger.debug "tmp_hash"
           return tmp_hash
@@ -163,6 +164,7 @@ module ProjectRazor
       def parse_and_validate_options(option_items, banner, logic = nil)
         options = {}
         #uuid = @web_command ? @prev_args.peek(1) : @prev_args.peek(0)
+        logger.debug @prev_args.to_s
         uuid = @prev_args.peek(0)
         # Get our optparse object passing our options hash, option_items hash, and our banner
         optparse = get_options(options, :options_items => option_items, :banner => banner)

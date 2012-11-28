@@ -1,3 +1,5 @@
+require "project_razor/client"
+require "project_razor/constants"
 
 # Root ProjectRazor namespace
 module ProjectRazor
@@ -112,17 +114,19 @@ module ProjectRazor
         # filter expression was included as part of the web command
         @command_array.unshift(@prev_args.pop) if @web_command && @prev_args.peek(0) != "default" && @prev_args.peek(0) != "get"
         # Get all tag rules and print/return
-        print_object_array(get_object("tagrules", :tag), "Tag Rules",
-                           :style => :table, :success_type => :generic)
+        # print_object_array(get_object("tagrules", :tag), "Tag Rules",
+                           # :style => :table, :success_type => :generic)
+        print_object_array @client.get_all_tagrules
       end
 
       def get_tagrule_by_uuid
         @command = :get_tagrule_by_uuid
         # the UUID was the last "previous argument"
         tagrule_uuid = get_uuid_from_prev_args
-        tagrule = get_object("tagrule_by_uuid", :tag, tagrule_uuid)
-        raise ProjectRazor::Error::Slice::InvalidUUID, "Cannot Find Tag Rule with UUID: [#{tagrule_uuid}]" unless tagrule && (tagrule.class != Array || tagrule.length > 0)
-        print_object_array [tagrule], "", :success_type => :generic
+        # tagrule = get_object("tagrule_by_uuid", :tag, tagrule_uuid)
+        # raise ProjectRazor::Error::Slice::InvalidUUID, "Cannot Find Tag Rule with UUID: [#{tagrule_uuid}]" unless tagrule && (tagrule.class != Array || tagrule.length > 0)
+        # print_object_array [tagrule], "", :success_type => :generic
+        print_object_array @client.get_tagrule_by_uuid(tagrule_uuid)
       end
 
       def add_tagrule
@@ -142,11 +146,12 @@ module ProjectRazor
 
         # create a new tagrule using the options that were passed into this subcommand,
         # then persist the tagrule object
-        tagrule = ProjectRazor::Tagging::TagRule.new({"@name" => options[:name], "@tag" => options[:tag]})
-        raise(ProjectRazor::Error::Slice::CouldNotCreate, "Could not create Tag Rule") unless tagrule
+        # tagrule = ProjectRazor::Tagging::TagRule.new({"@name" => options[:name], "@tag" => options[:tag]})
+        # raise(ProjectRazor::Error::Slice::CouldNotCreate, "Could not create Tag Rule") unless tagrule
         # setup_data
-        @data.persist_object(tagrule)
-        print_object_array([tagrule], "", :success_type => :created)
+        # @data.persist_object(tagrule)
+        # print_object_array([tagrule], "", :success_type => :created)
+        print_object_array @client.add_tagrule(options)
       end
 
       def update_tagrule
@@ -165,18 +170,19 @@ module ProjectRazor
         check_option_usage(option_items, options, includes_uuid, false)
 
         # get the tagfule to update
-        tagrule = get_object("tagrule_with_uuid", :tag, tagrule_uuid)
-        raise ProjectRazor::Error::Slice::InvalidUUID, "Cannot Find Tag Rule with UUID: [#{tagrule_uuid}]" unless tagrule && (tagrule.class != Array || tagrule.length > 0)
-        tagrule.name = options[:name] if options[:name]
-        tagrule.tag = options[:tag] if options[:tag]
-        raise ProjectRazor::Error::Slice::CouldNotUpdate, "Could not update Tag Rule [#{tagrule.uuid}]" unless tagrule.update_self
-        print_object_array [tagrule], "", :success_type => :updated
+        # tagrule = get_object("tagrule_with_uuid", :tag, tagrule_uuid)
+        # raise ProjectRazor::Error::Slice::InvalidUUID, "Cannot Find Tag Rule with UUID: [#{tagrule_uuid}]" unless tagrule && (tagrule.class != Array || tagrule.length > 0)
+        # tagrule.name = options[:name] if options[:name]
+        # tagrule.tag = options[:tag] if options[:tag]
+        # raise ProjectRazor::Error::Slice::CouldNotUpdate, "Could not update Tag Rule [#{tagrule.uuid}]" unless tagrule.update_self
+        # print_object_array [tagrule], "", :success_type => :updated
+        print_object_array @client.update_tagrule(tagrule_uuid, options)
       end
 
       def remove_all_tagrules
         @command = :remove_all_tagrules
         raise ProjectRazor::Error::Slice::MethodNotAllowed, "Cannot remove all Tag Rules via REST" if @web_command
-        raise ProjectRazor::Error::Slice::CouldNotRemove, "Could not remove all Tag Rules" unless @data.delete_all_objects(:tag)
+        # raise ProjectRazor::Error::Slice::CouldNotRemove, "Could not remove all Tag Rules" unless @data.delete_all_objects(:tag)
         slice_success("All Tag Rules removed", :success_type => :removed)
       end
 
@@ -184,36 +190,38 @@ module ProjectRazor
         @command = :remove_tagrule_by_uuid
         # the UUID was the last "previous argument"
         tagrule_uuid = get_uuid_from_prev_args
-        tagrule = get_object("tagrule_with_uuid", :tag, tagrule_uuid)
-        raise ProjectRazor::Error::Slice::InvalidUUID, "Cannot Find Tag Rule with UUID: [#{tagrule_uuid}]" unless tagrule && (tagrule.class != Array || tagrule.length > 0)
+        # tagrule = get_object("tagrule_with_uuid", :tag, tagrule_uuid)
+        # raise ProjectRazor::Error::Slice::InvalidUUID, "Cannot Find Tag Rule with UUID: [#{tagrule_uuid}]" unless tagrule && (tagrule.class != Array || tagrule.length > 0)
         # setup_data
-        raise ProjectRazor::Error::Slice::CouldNotRemove, "Could not remove Tag Rule [#{tagrule.uuid}]" unless @data.delete_object(tagrule)
-        slice_success("Tag Rule [#{tagrule.uuid}] removed", :success_type => :removed)
+        # raise ProjectRazor::Error::Slice::CouldNotRemove, "Could not remove Tag Rule [#{tagrule.uuid}]" unless @data.delete_object(tagrule)
+        # slice_success("Tag Rule [#{tagrule.uuid}] removed", :success_type => :removed)
+        print_object_array @client.remove_tagrule_by_uuid(tagrule_uuid)
       end
 
       # Tag Matcher
       #
 
-      def find_matcher(matcher_uuid)
-        found_matcher = []
-        # setup_data
-        @data.fetch_all_objects(:tag).each do
-        |tr|
-          tr.tag_matchers.each do
-          |matcher|
-            found_matcher << [matcher, tr] if matcher.uuid.scan(matcher_uuid).count > 0
-          end
-        end
-        found_matcher.count == 1 ? found_matcher.first : nil
-      end
+      # def find_matcher(matcher_uuid)
+      #   found_matcher = []
+      #   # setup_data
+      #   @data.fetch_all_objects(:tag).each do
+      #   |tr|
+      #     tr.tag_matchers.each do
+      #     |matcher|
+      #       found_matcher << [matcher, tr] if matcher.uuid.scan(matcher_uuid).count > 0
+      #     end
+      #   end
+      #   found_matcher.count == 1 ? found_matcher.first : nil
+      # end
 
       def get_matcher_by_uuid
         @command = :get_matcher_by_uuid
         matcher_uuid = @command_array.shift
         raise ProjectRazor::Error::Slice::MissingArgument, "Must provide a Tag Matcher UUID" unless validate_arg(matcher_uuid)
-        matcher, tagrule = find_matcher(matcher_uuid)
-        raise ProjectRazor::Error::Slice::InvalidUUID, "Cannot find Tag Matcher with UUID [#{matcher_uuid}]" unless matcher
-        print_object_array [matcher], "", :success_type => :generic
+        # matcher, tagrule = find_matcher(matcher_uuid)
+        # raise ProjectRazor::Error::Slice::InvalidUUID, "Cannot find Tag Matcher with UUID [#{matcher_uuid}]" unless matcher
+        # print_object_array [matcher], "", :success_type => :generic
+        print_object_array @client.get_matcher_by_uuid(tag_uuid, matcher_uuid)
       end
 
       def add_matcher
@@ -231,19 +239,20 @@ module ProjectRazor
         # call is used to indicate whether the choice of options from the
         # option_items hash must be an exclusive choice)
         check_option_usage(option_items, options, includes_uuid, false)
-        key = options[:key]
-        compare = options[:compare]
-        value = options[:value]
+        # key = options[:key]
+        # compare = options[:compare]
+        # value = options[:value]
         inverse = (options[:invert] == nil ? "false" : options[:invert])
 
         # check the values that were passed in
-        tagrule = get_object("tagrule_with_uuid", :tag, tagrule_uuid)
-        raise ProjectRazor::Error::Slice::InvalidUUID, "Cannot Find Tag Rule with UUID: [#{tagrule_uuid}]" unless tagrule && (tagrule.class != Array || tagrule.length > 0)
+        # tagrule = get_object("tagrule_with_uuid", :tag, tagrule_uuid)
+        # raise ProjectRazor::Error::Slice::InvalidUUID, "Cannot Find Tag Rule with UUID: [#{tagrule_uuid}]" unless tagrule && (tagrule.class != Array || tagrule.length > 0)
         raise ProjectRazor::Error::Slice::MissingArgument, "Option for --compare must be [equal|like]" unless compare == "equal" || compare == "like"
-        matcher = tagrule.add_tag_matcher(:key => key, :compare => compare, :value => value, :inverse => inverse)
-        raise ProjectRazor::Error::Slice::CouldNotCreate, "Could not create tag matcher" unless matcher
-        raise(ProjectRazor::Error::Slice::CouldNotCreate, "Could not create Tag Matcher") unless tagrule.update_self
-        print_object_array([matcher], "Tag Matcher created:", :success_type => :created)
+        # matcher = tagrule.add_tag_matcher(:key => key, :compare => compare, :value => value, :inverse => inverse)
+        # raise ProjectRazor::Error::Slice::CouldNotCreate, "Could not create tag matcher" unless matcher
+        # raise(ProjectRazor::Error::Slice::CouldNotCreate, "Could not create Tag Matcher") unless tagrule.update_self
+        # print_object_array([matcher], "Tag Matcher created:", :success_type => :created)
+        print_object_array @client.add_matcher(tagrule_uuid, options)
       end
 
       def update_matcher
@@ -262,39 +271,42 @@ module ProjectRazor
         # option_items hash must be an exclusive choice)
         check_option_usage(option_items, options, includes_uuid, false)
         #tagrule_uuid = options[:tag_rule_uuid]
-        key = options[:key]
-        compare = options[:compare]
-        value = options[:value]
-        invert = options[:invert]
+        # key = options[:key]
+        # compare = options[:compare]
+        # value = options[:value]
+        # invert = options[:invert]
 
         # check the values that were passed in
-        matcher, tagrule = find_matcher(matcher_uuid)
-        raise ProjectRazor::Error::Slice::InvalidUUID, "Cannot find Tag Matcher with UUID [#{matcher_uuid}]" unless matcher
+        # matcher, tagrule = find_matcher(matcher_uuid)
+        # raise ProjectRazor::Error::Slice::InvalidUUID, "Cannot find Tag Matcher with UUID [#{matcher_uuid}]" unless matcher
         raise ProjectRazor::Error::Slice::MissingArgument, "Option for --compare must be [equal|like]" unless !compare || compare == "equal" || compare == "like"
         raise ProjectRazor::Error::Slice::MissingArgument, "Option for --invert must be [true|false]" unless !invert || invert == "true" || invert == "false"
-        matcher.key = key if key
-        matcher.compare = compare if compare
-        matcher.value = value if value
-        matcher.inverse = invert if invert
-        if tagrule.update_self
-          print_object_array([matcher], "Tag Matcher updated [#{matcher.uuid}]\nTag Rule:", :success_type => :updated)
-        else
-          raise(ProjectRazor::Error::Slice::CouldNotCreate, "Could not update Tag Matcher")
-        end
+        # matcher.key = key if key
+        # matcher.compare = compare if compare
+        # matcher.value = value if value
+        # matcher.inverse = invert if invert
+        # if tagrule.update_self
+          # print_object_array([matcher], "Tag Matcher updated [#{matcher.uuid}]\nTag Rule:", :success_type => :updated)
+        # else
+          # raise(ProjectRazor::Error::Slice::CouldNotCreate, "Could not update Tag Matcher")
+        # end
+        print_object_array @client.update_matcher(tagrule_uuid, matcher_uuid, options)
       end
 
       def remove_matcher
         @command = :remove_matcher
         # the UUID was the last "previous argument"
         matcher_uuid = get_uuid_from_prev_args
-        matcher, tagrule = find_matcher(matcher_uuid)
+        # matcher, tagrule = find_matcher(matcher_uuid)
         raise ProjectRazor::Error::Slice::InvalidUUID, "Cannot find Tag Matcher with UUID [#{matcher_uuid}]" unless matcher
-        raise ProjectRazor::Error::Slice::CouldNotCreate, "Could not remove Tag Matcher" unless tagrule.remove_tag_matcher(matcher.uuid)
-        raise(ProjectRazor::Error::Slice::CouldNotCreate, "Could not remove Tag Matcher") unless tagrule.update_self
-        print_object_array([tagrule], "Tag Matcher removed [#{matcher.uuid}]\nTag Rule:", :success_type => :removed)
+        # raise ProjectRazor::Error::Slice::CouldNotCreate, "Could not remove Tag Matcher" unless tagrule.remove_tag_matcher(matcher.uuid)
+        # raise(ProjectRazor::Error::Slice::CouldNotCreate, "Could not remove Tag Matcher") unless tagrule.update_self
+        # print_object_array([tagrule], "Tag Matcher removed [#{matcher.uuid}]\nTag Rule:", :success_type => :removed)
+        print_object_array @client.remove_matcher(tagrule_uuid, matcher_uuid)
       end
 
     end
   end
 end
+
 
