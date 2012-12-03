@@ -9,40 +9,26 @@ module ProjectRazor
 			BMC_URL_PREFIX = ProjectRazor::DEFAULT_TARGET + ProjectRazor::BMC_PATH
 
 			def get_all_bmcs
-				
+				get(BMC_URL_PREFIX)	
 			end
 
-			def get_bmc_by_uuid
-				
-			end
-
-			def get_bmc_with_uuid
-				
+			def get_bmc_by_uuid(bmc_uuid, options)
+				if options[:query]
+					get("#{BMC_URL_PREFIX}/#{bmc_uuid}?query=#{options[:query]}")
+				else 
+					get("#{BMC_URL_PREFIX}/#{bmc_uuid}")
+				end
 			end
 
 			def update_bmc_power_state
-				
+								
 			end
 
-			def register_bmc
-				
+			def register_bmc(options)
+				json_hash = url_encode(options)
+				post("#{BMC_URL_PREFIX}/register/json_hash=#{json_hash}")
 			end
 
-			def run_ipmi_query_cmd
-				
-			end
-
-			def change_bmc_power_state
-				
-			end
-
-			def update_bmc_hash!
-				
-			end
-
-			def insert_bmc
-				
-			end
 		end
 	end
 end

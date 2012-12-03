@@ -75,13 +75,14 @@ module ProjectRazor
         # if it's a web command and the last argument wasn't the string "default" or "get", then a
         # filter expression was included as part of the web command
         @command_array.unshift(@prev_args.pop) if @web_command && @prev_args.peek(0) != "default" && @prev_args.peek(0) != "get"
-        bmc_array = get_object("bmc", :bmc)
-        if bmc_array
-          bmc_array.each { |bmc|
-            bmc.refresh_power_state
-          }
-        end
-        print_object_array bmc_array, "Bmc Nodes"
+        # bmc_array = get_object("bmc", :bmc)
+        # if bmc_array
+        #   bmc_array.each { |bmc|
+        #     bmc.refresh_power_state
+        #   }
+        # end
+        # print_object_array bmc_array, "Bmc Nodes"
+        print_object_array @client.get_all_bmcs
       end
 
       # This function is used to print out a single matching BMC object (where the match
@@ -97,21 +98,22 @@ module ProjectRazor
         @command_array.unshift(@prev_args.pop) if @web_command
         bmc_uuid, options = parse_and_validate_options(option_items, "razor bmc [get] (UUID) [--query,-q IPMI_QUERY]", :require_all)
         includes_uuid = true if bmc_uuid
-        matching_bmc = get_bmc_with_uuid(bmc_uuid)
-        raise ProjectRazor::Error::Slice::InvalidUUID, "no matching BMC (with a uuid value of '#{bmc_uuid}') found" unless matching_bmc
+        # matching_bmc = get_bmc_with_uuid(bmc_uuid)
+        # raise ProjectRazor::Error::Slice::InvalidUUID, "no matching BMC (with a uuid value of '#{bmc_uuid}') found" unless matching_bmc
         selected_option = options[:query]
         # if no options were passed in, then just print out the summary for the specified bmc
-        return print_object_array [matching_bmc], "Bmc Nodes" unless selected_option
+        # return print_object_array [matching_bmc], "Bmc Nodes" unless selected_option
+        print_object_array @client.get_bmc_by_uuid(bmc_uuid,options)
         # else, show the result of running the appropriate impitool query command
-        if selected_option == "power_status"
-          run_ipmi_query_cmd(bmc_uuid, "power", "status")
-        elsif selected_option == "lan_print"
-          run_ipmi_query_cmd(bmc_uuid, "lan", "print")
-        elsif selected_option == "fru_print"
-          run_ipmi_query_cmd(bmc_uuid, "fru", "print")
-        else
-          run_ipmi_query_cmd(bmc_uuid, "get", selected_option)
-        end
+        # if selected_option == "power_status"
+        #   run_ipmi_query_cmd(bmc_uuid, "power", "status")
+        # elsif selected_option == "lan_print"
+        #   run_ipmi_query_cmd(bmc_uuid, "lan", "print")
+        # elsif selected_option == "fru_print"
+        #   run_ipmi_query_cmd(bmc_uuid, "fru", "print")
+        # else
+        #   run_ipmi_query_cmd(bmc_uuid, "get", selected_option)
+        # end
       end
 
       # This function searches for a Bmc node that matches the '@uuid' value contained
